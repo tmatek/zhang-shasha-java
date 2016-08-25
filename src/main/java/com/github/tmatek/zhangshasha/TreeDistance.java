@@ -1,4 +1,4 @@
-package com.github.tmatek;
+package com.github.tmatek.zhangshasha;
 
 /**
  * Utility class for calculating the tree distance between two tree structures.

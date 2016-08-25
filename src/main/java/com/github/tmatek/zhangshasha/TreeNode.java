@@ -1,4 +1,4 @@
-package com.github.tmatek;
+package com.github.tmatek.zhangshasha;
 
 
 import java.util.Collection;

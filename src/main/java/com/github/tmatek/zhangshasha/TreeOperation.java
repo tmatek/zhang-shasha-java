@@ -1,4 +1,4 @@
-package com.github.tmatek;
+package com.github.tmatek.zhangshasha;
 
 /**
  * Possible tree operations which transform one tree to another

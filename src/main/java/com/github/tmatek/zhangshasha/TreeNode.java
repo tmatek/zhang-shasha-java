@@ -5,7 +5,7 @@ import java.util.Collection;
 
 /**
  * A node belonging to a tree structure, with corresponding collection of its children, the pointer to its parent and
- * a comparison function with other tree nodes.
+ * a transformation cost function for comparison with other tree nodes.
  */
 public interface TreeNode {
 
@@ -20,5 +20,13 @@ public interface TreeNode {
      * @return - the parent node of this tree node or null if this tree node is the root of the tree
      */
     TreeNode getParent();
+
+    /**
+     * Returns the cost of transforming this tree node to {@code other} tree node using operation {@code operation}.
+     * @param operation - the type of tree operation being performed, {@see TreeOperation}
+     * @param other - the tree node into which this node is being transformed
+     * @return - the cost of transforming this tree node to another tree node using specified operation
+     */
+    int getTransformationCost(TreeOperation operation, TreeNode other);
 
 }

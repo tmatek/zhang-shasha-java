@@ -1,6 +1,5 @@
 package com.github.tmatek.zhangshasha;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,9 +14,18 @@ public class StringTreeNode implements TreeNode {
 
     private String label;
 
+    public StringTreeNode(String label) {
+        this.label = label;
+    }
+
+    public void addChild(StringTreeNode child) {
+        this.children.add(child);
+        child.parent = this;
+    }
+
     @Override
-    public Collection<TreeNode> getChildren() {
-        return new ArrayList<>(this.children);
+    public Collection<? extends TreeNode> getChildren() {
+        return this.children;
     }
 
     @Override
@@ -27,6 +35,15 @@ public class StringTreeNode implements TreeNode {
 
     @Override
     public int getTransformationCost(TreeOperation operation, TreeNode other) {
-        return 0;
+        switch (operation) {
+            case OP_DELETE_NODE:
+                return 1;
+
+            case OP_INSERT_NODE:
+                return 1;
+
+            default:
+                return this.label.equals(((StringTreeNode) other).label) ? 0 : 1;
+        }
     }
 }

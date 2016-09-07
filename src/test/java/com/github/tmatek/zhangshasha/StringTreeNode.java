@@ -1,5 +1,6 @@
 package com.github.tmatek.zhangshasha;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class StringTreeNode implements TreeNode {
         return null;
     }
 
-    private List<StringTreeNode> children;
+    private List<StringTreeNode> children = new ArrayList<>();
 
     private StringTreeNode parent;
 

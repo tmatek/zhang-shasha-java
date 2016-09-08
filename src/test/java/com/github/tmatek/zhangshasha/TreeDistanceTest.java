@@ -3,6 +3,7 @@ package com.github.tmatek.zhangshasha;
 
 import junit.framework.TestCase;
 
+import java.util.List;
 import java.util.Map;
 
 public class TreeDistanceTest extends TestCase {
@@ -48,6 +49,29 @@ public class TreeDistanceTest extends TestCase {
         assertEquals(0, lmld[1]);
         assertEquals(3, lmld[3]);
         assertEquals(3, lmld[4]);
+    }
+
+    public void testGetKeyroots() {
+        StringTreeNode a = new StringTreeNode("A");
+        StringTreeNode b = new StringTreeNode("B");
+        StringTreeNode c = new StringTreeNode("C");
+        StringTreeNode d = new StringTreeNode("D");
+        StringTreeNode e = new StringTreeNode("E");
+        StringTreeNode f = new StringTreeNode("F");
+
+        a.addChild(b);
+        b.addChild(c);
+        a.addChild(d);
+        a.addChild(e);
+        e.addChild(f);
+
+        Map<TreeNode, Integer> postorderIds = TreeDistance.getPostorderIdentifiers(a);
+        List<TreeNode> keyRoots = TreeDistance.getKeyroots(a, postorderIds);
+
+        assertEquals(3, keyRoots.size());
+        assertEquals(2, (int) postorderIds.get(keyRoots.get(0)));
+        assertEquals(4, (int) postorderIds.get(keyRoots.get(1)));
+        assertEquals(5, (int) postorderIds.get(keyRoots.get(2)));
     }
 
 }

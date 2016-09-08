@@ -1,9 +1,6 @@
 package com.github.tmatek.zhangshasha;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class for calculating the tree distance between two tree structures.
@@ -46,6 +43,7 @@ public final class TreeDistance {
 
     /**
      * Returns a list of leftmost leaf descendants (using postorder IDs) for every postorder ID node.
+     * A leftmost leaf descendant of a node is found by following the leftmost branch from the node to a leaf.
      * @param root the root node to start the search from
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      * @return a list of leftmost leaf descendants for every node
@@ -66,7 +64,6 @@ public final class TreeDistance {
     private static void leftmostLeafDescendantsRec(TreeNode current, int[] ref, List<TreeNode> chain,
                                                    Map<TreeNode, Integer> postorderIDs) {
 
-
         if (current.getChildren().size() == 0) {
             // leftmost descendant of a leaf is the leaf itself
             ref[postorderIDs.get(current)] = postorderIDs.get(current);
@@ -84,6 +81,60 @@ public final class TreeDistance {
         }
     }
 
+    /**
+     * Returns an ordered list of keyroot nodes in the tree. A keyroot node is a node which either has a left sibling
+     * or is the root of the tree. The keyroot nodes are ordered according to their postorder IDs.
+     * @param root the root node to start the search from
+     * @param postorderIDs a mapping of tree nodes to postorder IDs
+     * @return an ordered list of keyroot nodes, ordered according to postorder IDs
+     */
+    public static List<TreeNode> getKeyroots(TreeNode root, Map<TreeNode, Integer> postorderIDs) {
+        List<TreeNode> keyroots = new ArrayList<>();
+        keyrootsRec(root, keyroots, new ArrayList<>());
+        Collections.sort(keyroots, new PostorderComparator(postorderIDs));
+        return keyroots;
+    }
 
+    /**
+     * A comparator which sorts {@link TreeNode} objects according to their postorder IDs
+     * given by a mapping.
+     */
+    private static class PostorderComparator implements Comparator<TreeNode> {
+
+        private Map<TreeNode, Integer> postorderIDs;
+
+        public PostorderComparator(Map<TreeNode, Integer> postorderIDs) {
+            this.postorderIDs = postorderIDs;
+        }
+
+        @Override
+        public int compare(TreeNode t1, TreeNode t2) {
+            return this.postorderIDs.get(t1) - this.postorderIDs.get(t2);
+        }
+    }
+
+    /**
+     * Recursively find the keyroots starting from <code>current</code>.
+     * @param current the current node being processed
+     * @param ref the list reference in which to store keyroot nodes
+     * @param chain the current path in the tree
+     */
+    private static void keyrootsRec(TreeNode current, List<TreeNode> ref, List<TreeNode> chain) {
+        if (current.getChildren().size() == 0) {
+
+            if (chain.size() > 0) {
+                // the first node in the chain is the keyroot node
+                ref.add(chain.get(0));
+            } else
+                ref.add(current);
+
+        } else {
+            chain.add(current);
+
+            int i = 0;
+            for (TreeNode child : current.getChildren())
+                keyrootsRec(child, ref, i++ == 0 ? chain : new ArrayList<>());
+        }
+    }
 
 }

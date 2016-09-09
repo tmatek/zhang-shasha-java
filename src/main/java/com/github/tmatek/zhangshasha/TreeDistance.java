@@ -42,14 +42,17 @@ public final class TreeDistance {
     }
 
     /**
-     * Returns a list of leftmost leaf descendants (using postorder IDs) for every postorder ID node.
+     * Returns an array of leftmost leaf descendants for every node in the tree given by <code>root</code>. The
+     * indexing of the returned array follows postorder IDs given in <code>postorderIDs</code>; <code>result[0]</code>
+     * returns the leftmost leaf descendant of node with postorder ID zero.
+     * <br><br>
      * A leftmost leaf descendant of a node is found by following the leftmost branch from the node to a leaf.
      * @param root the root node to start the search from
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      * @return a list of leftmost leaf descendants for every node
      */
-    public static int[] leftmostLeafDescendants(TreeNode root, Map<TreeNode, Integer> postorderIDs) {
-        int[] lmld = new int[postorderIDs.get(root) + 1];
+    public static TreeNode[] leftmostLeafDescendants(TreeNode root, Map<TreeNode, Integer> postorderIDs) {
+        TreeNode[] lmld = new TreeNode[postorderIDs.get(root) + 1];
         leftmostLeafDescendantsRec(root, lmld, new ArrayList<>(), postorderIDs);
         return lmld;
     }
@@ -61,16 +64,16 @@ public final class TreeDistance {
      * @param chain the current path in the tree
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      */
-    private static void leftmostLeafDescendantsRec(TreeNode current, int[] ref, List<TreeNode> chain,
+    private static void leftmostLeafDescendantsRec(TreeNode current, TreeNode[] ref, List<TreeNode> chain,
                                                    Map<TreeNode, Integer> postorderIDs) {
 
         if (current.getChildren().size() == 0) {
             // leftmost descendant of a leaf is the leaf itself
-            ref[postorderIDs.get(current)] = postorderIDs.get(current);
+            ref[postorderIDs.get(current)] = current;
 
             // assign the rest of nodes in the chain the same leftmost leaf descendant - this leaf
             for (TreeNode ancestor : chain)
-                ref[postorderIDs.get(ancestor)] = postorderIDs.get(current);
+                ref[postorderIDs.get(ancestor)] = current;
 
         } else {
             chain.add(current);
@@ -151,6 +154,19 @@ public final class TreeDistance {
      * @return a list of tree transformations required to transform first tree into the second
      */
     public static List<TreeTransformation> treeDistanceZhangShasha(TreeNode t1, TreeNode t2) {
+
+        // prepare postorder numbering
+        Map<TreeNode, Integer> postorder1 = getPostorderIdentifiers(t1),
+                postorder2 = getPostorderIdentifiers(t2);
+
+        // prepare leftmost leaf descendants
+        TreeNode[] lmld1 = leftmostLeafDescendants(t1, postorder1),
+                lmld2 = leftmostLeafDescendants(t2, postorder2);
+
+        // prepare keyroots
+        List<TreeNode> keyRoots1 = getKeyroots(t1, postorder1),
+                keyRoots2 = getKeyroots(t2, postorder2);
+
         return null;
     }
 

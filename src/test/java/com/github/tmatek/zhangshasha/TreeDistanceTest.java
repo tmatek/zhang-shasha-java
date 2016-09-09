@@ -42,13 +42,13 @@ public class TreeDistanceTest extends TestCase {
         e.addChild(f);
 
         Map<TreeNode, Integer> postorderIds = TreeDistance.getPostorderIdentifiers(a);
-        int[] lmld = TreeDistance.leftmostLeafDescendants(a, postorderIds);
+        TreeNode[] lmld = TreeDistance.leftmostLeafDescendants(a, postorderIds);
 
-        assertEquals(0, lmld[5]);
-        assertEquals(2, lmld[2]);
-        assertEquals(0, lmld[1]);
-        assertEquals(3, lmld[3]);
-        assertEquals(3, lmld[4]);
+        assertEquals(0, (int) postorderIds.get(lmld[5]));
+        assertEquals(2, (int) postorderIds.get(lmld[2]));
+        assertEquals(0, (int) postorderIds.get(lmld[1]));
+        assertEquals(3, (int) postorderIds.get(lmld[3]));
+        assertEquals(3, (int) postorderIds.get(lmld[4]));
     }
 
     public void testGetKeyroots() {

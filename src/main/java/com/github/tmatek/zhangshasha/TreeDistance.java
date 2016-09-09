@@ -135,6 +135,23 @@ public final class TreeDistance {
             for (TreeNode child : current.getChildren())
                 keyrootsRec(child, ref, i++ == 0 ? chain : new ArrayList<>());
         }
+
+    }
+
+    /**
+     * Calculates the tree distance between tree <code>t1</code> and <code>t2</code>.
+     * Returns a list of tree transformations required to transform tree <code>t1</code> to <code>t2</code>.
+     * Every transformation has an associated cost. The sum of costs of all transformations is the tree distance
+     * between <code>t1</code> and <code>t2</code>. The sum of costs is minimal.
+     * <br><br>
+     * For further information see paper by K. Zhang et al.:
+     * <a href="http://grantjenks.com/wiki/_media/ideas/simple_fast_algorithms_for_the_editing_distance_between_tree_and_related_problems.pdf">Simple fast algorithms for the editing distance between trees and related problems</a>
+     * @param t1 the first tree structure
+     * @param t2 the second tree structure
+     * @return a list of tree transformations required to transform first tree into the second
+     */
+    public static List<TreeTransformation> treeDistanceZhangShasha(TreeNode t1, TreeNode t2) {
+        return null;
     }
 
 }

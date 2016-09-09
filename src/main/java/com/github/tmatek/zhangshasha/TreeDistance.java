@@ -7,7 +7,8 @@ import java.util.*;
  */
 public final class TreeDistance {
 
-    private TreeDistance() {}
+    private TreeDistance() {
+    }
 
     private static class IntHolder {
         public int value;
@@ -17,6 +18,7 @@ public final class TreeDistance {
      * Assigns a unique identifier to each tree node according to the postorder traversal of the tree structure.
      * Assumes that {@code node} is the root of the tree structure. All identifiers are in the range [0, number of
      * nodes in the tree).
+     *
      * @param node the node from which to identify postorder numbering.
      * @return a mapping of tree nodes to postorder sequence ids
      */
@@ -28,8 +30,9 @@ public final class TreeDistance {
 
     /**
      * Recursively assign postorder identifiers to tree nodes.
-     * @param current the current tree node being processed
-     * @param map a mapping of tree nodes to postorder sequence ids
+     *
+     * @param current    the current tree node being processed
+     * @param map        a mapping of tree nodes to postorder sequence ids
      * @param idSequence the counter of postorder sequence ids
      */
     private static void getPostorderIdentifiersRec(TreeNode current, Map<TreeNode, Integer> map,
@@ -47,7 +50,8 @@ public final class TreeDistance {
      * returns the leftmost leaf descendant of node with postorder ID zero.
      * <br><br>
      * A leftmost leaf descendant of a node is found by following the leftmost branch from the node to a leaf.
-     * @param root the root node to start the search from
+     *
+     * @param root         the root node to start the search from
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      * @return a list of leftmost leaf descendants for every node
      */
@@ -59,9 +63,10 @@ public final class TreeDistance {
 
     /**
      * Recursively find the leftmost leaf descendants for all nodes in the tree.
-     * @param current the current node being processed
-     * @param ref the list reference in which to store leftmost descendants
-     * @param chain the current path in the tree
+     *
+     * @param current      the current node being processed
+     * @param ref          the list reference in which to store leftmost descendants
+     * @param chain        the current path in the tree
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      */
     private static void leftmostLeafDescendantsRec(TreeNode current, TreeNode[] ref, List<TreeNode> chain,
@@ -87,7 +92,8 @@ public final class TreeDistance {
     /**
      * Returns an ordered list of keyroot nodes in the tree. A keyroot node is a node which either has a left sibling
      * or is the root of the tree. The keyroot nodes are ordered according to their postorder IDs.
-     * @param root the root node to start the search from
+     *
+     * @param root         the root node to start the search from
      * @param postorderIDs a mapping of tree nodes to postorder IDs
      * @return an ordered list of keyroot nodes, ordered according to postorder IDs
      */
@@ -118,9 +124,10 @@ public final class TreeDistance {
 
     /**
      * Recursively find the keyroots starting from <code>current</code>.
+     *
      * @param current the current node being processed
-     * @param ref the list reference in which to store keyroot nodes
-     * @param chain the current path in the tree
+     * @param ref     the list reference in which to store keyroot nodes
+     * @param chain   the current path in the tree
      */
     private static void keyrootsRec(TreeNode current, List<TreeNode> ref, List<TreeNode> chain) {
         if (current.getChildren().size() == 0) {
@@ -149,6 +156,7 @@ public final class TreeDistance {
      * <br><br>
      * For further information see paper by K. Zhang et al.:
      * <a href="http://grantjenks.com/wiki/_media/ideas/simple_fast_algorithms_for_the_editing_distance_between_tree_and_related_problems.pdf">Simple fast algorithms for the editing distance between trees and related problems</a>
+     *
      * @param t1 the first tree structure
      * @param t2 the second tree structure
      * @return a list of tree transformations required to transform first tree into the second
@@ -167,7 +175,24 @@ public final class TreeDistance {
         List<TreeNode> keyRoots1 = getKeyroots(t1, postorder1),
                 keyRoots2 = getKeyroots(t2, postorder2);
 
-        return null;
+        // prepare tree distance table and transformation list
+        int[][] treeDistance = new int[postorder1.get(t1) + 1][postorder2.get(t2) + 1];
+        List<TreeTransformation> transformations = new ArrayList<>();
+
+        // calculate tree distance
+        for (TreeNode keyRoot1 : keyRoots1) {
+            for (TreeNode keyRoot2 : keyRoots2) {
+                forestDistance(keyRoot1, keyRoot2, lmld1, lmld2, postorder1, postorder2, treeDistance, transformations);
+            }
+        }
+
+        return transformations;
+    }
+
+    private static void forestDistance(TreeNode keyRoot1, TreeNode keyRoot2, TreeNode[] lmld1, TreeNode[] lmld2,
+                                       Map<TreeNode, Integer> postorder1, Map<TreeNode, Integer> postorder2,
+                                       int[][] treeDist, List<TreeTransformation> transforms) {
+
     }
 
 }

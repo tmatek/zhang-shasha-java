@@ -25,10 +25,13 @@ public interface TreeNode {
     /**
      * Returns the cost of transforming this tree node using operation {@code operation};
      * <br><br>
-     * If {@code operation} equals {@link TreeOperation#OP_DELETE_NODE} then {@code other} is null and the cost of
-     * removing this tree node should be returned.<br><br>
-     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then {@code other} represents the tree node
-     * which will be inserted as a child of this tree node - the insert cost should be returned.<br><br>
+     * If {@code operation} equals {@link TreeOperation#OP_DELETE_NODE} then {@code other} is <code>null</code> and the
+     * cost of removing this tree node should be returned.
+     * <br><br>
+     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then this object represents the tree node
+     * which will be inserted as a child of {@code other} tree node - the insert cost should be returned. It is possible
+     * that {@code other} is <code>null</code>; in those cases, the cost of inserting a new root node should be returned.
+     * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_RENAME_NODE} then the cost of renaming this tree node to
      * {@code other} tree node should be returned.
      * @param operation the type of tree operation being performed, {@see TreeOperation}

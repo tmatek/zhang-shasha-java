@@ -74,4 +74,9 @@ public class TreeDistanceTest extends TestCase {
         assertEquals(5, (int) postorderIds.get(keyRoots.get(2)));
     }
 
+    public void testTreeDistance1() {
+        TreeDistance.treeDistanceZhangShasha(StringTreeNode.fromStringRepresentation("4(1,2,3)"),
+                StringTreeNode.fromStringRepresentation("4(3(1,2))"));
+    }
+
 }

@@ -176,7 +176,7 @@ public final class TreeDistance {
                 keyRoots2 = getKeyroots(t2, postorder2);
 
         // prepare tree distance table and transformation list
-        int[][] treeDistance = new int[postorder1.get(t1) + 1][postorder2.get(t2) + 1];
+        ForestTrail[][] treeDistance = new ForestTrail[postorder1.get(t1) + 1][postorder2.get(t2) + 1];
         List<TreeTransformation> transformations = new ArrayList<>();
 
         // calculate tree distance
@@ -199,12 +199,9 @@ public final class TreeDistance {
 
         private int cost;
 
-        private ForestTrail nextState;
+        private ForestTrail nextState, treeState;
 
         private TreeNode first, second;
-
-        // if either first or second tree node is a forest
-        private boolean wasForest;
 
         /**
          * A constructor which initializes the final forest trail state - state where both trees are empty.
@@ -226,8 +223,13 @@ public final class TreeDistance {
             this.cost = first.getTransformationCost(operation, second);
         }
 
+        public void setTreeState(ForestTrail state) {
+            this.treeState = state;
+        }
+
         public int getTotalCost() {
-            return this.cost + (this.nextState == null ? 0 : this.nextState.cost);
+            return this.cost + (this.nextState == null ? 0 : this.nextState.getTotalCost()) + (this.treeState == null
+                    ? 0 : this.treeState.getTotalCost());
         }
 
         public int getOperationCost() {
@@ -237,7 +239,8 @@ public final class TreeDistance {
 
     private static ForestTrail[][] forestDistance(TreeNode keyRoot1, TreeNode keyRoot2, TreeNode[] lmld1,
                                                   TreeNode[] lmld2, ReversibleIdentityMap<TreeNode, Integer> postorder1,
-                                                  ReversibleIdentityMap<TreeNode, Integer> postorder2, int[][] treeDist) {
+                                                  ReversibleIdentityMap<TreeNode, Integer> postorder2,
+                                                  ForestTrail[][] treeDist) {
 
         int kr1 = postorder1.get(keyRoot1),
                 kr2 = postorder2.get(keyRoot2);
@@ -254,16 +257,64 @@ public final class TreeDistance {
 
         for (int i = 1, k = lm2; i < bound2; i++, k++) {
             TreeNode t = postorder2.getInverse(k);
-            TreeNode parent = postorder1.getInverse(postorder2.get(t.getParent()));
+            TreeNode parent = t.getParent();
 
-            if (i == bound2 - 1)
+            if (parent == null)
                 forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t);
             else
-                forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t, parent);
+                forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t, postorder1.getInverse
+                        (postorder2.get(parent)));
 
             forestDistance[i][0].nextState = forestDistance[i - 1][0];
         }
 
+        for (int j = 1, l = lm1; j < bound1; j++, l++) {
+            TreeNode t = postorder1.getInverse(l);
+            forestDistance[0][j] = new ForestTrail(TreeOperation.OP_DELETE_NODE, t);
+            forestDistance[0][j].nextState = forestDistance[0][j - 1];
+        }
+
+        // fill in the rest of forest distances
+        for (int k = lm1, j = 1; k <= kr1; k++, j++) {
+            for (int l = lm2, i = 1; l <= kr2; l++, i++) {
+                TreeNode first = postorder1.getInverse(k);
+                TreeNode second = postorder2.getInverse(l);
+                TreeNode parent = second.getParent();
+
+                ForestTrail insert;
+                if (parent == null)
+                    insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second);
+                else
+                    insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second,  postorder1.getInverse
+                            (postorder2.get(parent)));
+                insert.nextState = forestDistance[i - 1][j];
+
+                ForestTrail delete = new ForestTrail(TreeOperation.OP_DELETE_NODE, first);
+                delete.nextState = forestDistance[i][j - 1];
+
+                // both keyroots present a tree
+                ForestTrail rename = new ForestTrail(TreeOperation.OP_RENAME_NODE, first, second);
+                boolean trees = postorder1.get(lmld1[k]).equals(lm1) && postorder2.get(lmld2[l]).equals(lm2);
+                if (trees)
+                    rename.nextState = forestDistance[i - 1][j - 1];
+                else {
+                    rename.treeState = treeDist[l][k];
+                    rename.nextState = forestDistance[postorder2.get(lmld2[l]) - lm2][postorder1.get(lmld1[k]) - lm1];
+                }
+
+                int min = Math.min(insert.getTotalCost(), Math.min(delete.getTotalCost(), rename.getTotalCost()));
+
+                if (min == insert.getTotalCost())
+                    forestDistance[i][j] = insert;
+                else if (min == delete.getTotalCost())
+                    forestDistance[i][j] = delete;
+                else
+                    forestDistance[i][j] = rename;
+
+                if (trees)
+                    treeDist[l][k] = forestDistance[i][j];
+            }
+        }
 
         return forestDistance;
     }

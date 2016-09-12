@@ -176,7 +176,7 @@ public final class TreeDistance {
                 keyRoots2 = getKeyroots(t2, postorder2);
 
         // prepare tree distance table and transformation list
-        ForestTrail[][] treeDistance = new ForestTrail[postorder1.get(t1) + 1][postorder2.get(t2) + 1];
+        ForestTrail[][] treeDistance = new ForestTrail[postorder2.get(t2) + 1][postorder1.get(t1) + 1];
         List<TreeTransformation> transformations = new ArrayList<>();
 
         // calculate tree distance
@@ -186,7 +186,49 @@ public final class TreeDistance {
             }
         }
 
+        applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations);
         return transformations;
+    }
+
+    /**
+     * Transforms a series of {@link ForestTrail} objects to a list of {@link TreeTransformation} objects, stored
+     * in <code>ref</code>. This is needed as {@link ForestTrail} objects are used internally for storing forest
+     * distances, while {@link TreeTransformation} are public.
+     * @param current the current {@link ForestTrail} object in the serie
+     * @param ref the list in which to store {@link TreeTransformation} objects
+     */
+    private static void applyForestTrails(ForestTrail current, List<TreeTransformation> ref) {
+        if (current.nextState == null)
+            return;
+
+        if (current.treeState != null) {
+            applyForestTrails(current.nextState, ref);
+            applyForestTrails(current.treeState, ref);
+        } else {
+            TreeTransformation t;
+            switch (current.operation) {
+                case OP_INSERT_NODE:
+                case OP_NESTED_INSERT_NODE:
+
+                    if (current.second != null) {
+                        t = new TreeTransformation(current.operation, current.cost, current.first, current.second);
+                        t.setPosition(current.first.getParent().positionOfChild(current.first));
+                    } else
+                        t = new TreeTransformation(current.operation, current.cost, current.first);
+
+                    break;
+
+                case OP_DELETE_NODE:
+                    t = new TreeTransformation(current.operation, current.cost, current.first);
+                    break;
+
+                default:
+                    t = new TreeTransformation(current.operation, current.cost, current.first, current.second);
+            }
+
+            ref.add(t);
+            applyForestTrails(current.nextState, ref);
+        }
     }
 
     /**
@@ -223,24 +265,15 @@ public final class TreeDistance {
             this.cost = first.getTransformationCost(operation, second);
         }
 
-        public void setTreeState(ForestTrail state) {
-            this.treeState = state;
-        }
-
         public int getTotalCost() {
             return this.cost + (this.nextState == null ? 0 : this.nextState.getTotalCost()) + (this.treeState == null
                     ? 0 : this.treeState.getTotalCost());
         }
-
-        public int getOperationCost() {
-            return this.cost;
-        }
     }
 
-    private static ForestTrail[][] forestDistance(TreeNode keyRoot1, TreeNode keyRoot2, TreeNode[] lmld1,
-                                                  TreeNode[] lmld2, ReversibleIdentityMap<TreeNode, Integer> postorder1,
-                                                  ReversibleIdentityMap<TreeNode, Integer> postorder2,
-                                                  ForestTrail[][] treeDist) {
+    private static void forestDistance(TreeNode keyRoot1, TreeNode keyRoot2, TreeNode[] lmld1, TreeNode[] lmld2,
+                                       ReversibleIdentityMap<TreeNode, Integer> postorder1,
+                                       ReversibleIdentityMap<TreeNode, Integer> postorder2, ForestTrail[][] treeDist) {
 
         int kr1 = postorder1.get(keyRoot1),
                 kr2 = postorder2.get(keyRoot2);
@@ -283,9 +316,9 @@ public final class TreeDistance {
 
                 ForestTrail insert;
                 if (parent == null)
-                    insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second);
+                    insert = new ForestTrail(TreeOperation.OP_NESTED_INSERT_NODE, second);
                 else
-                    insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second,  postorder1.getInverse
+                    insert = new ForestTrail(TreeOperation.OP_NESTED_INSERT_NODE, second, postorder1.getInverse
                             (postorder2.get(parent)));
                 insert.nextState = forestDistance[i - 1][j];
 
@@ -315,8 +348,6 @@ public final class TreeDistance {
                     treeDist[l][k] = forestDistance[i][j];
             }
         }
-
-        return forestDistance;
     }
 
 }

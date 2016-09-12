@@ -100,11 +100,22 @@ public class StringTreeNode implements TreeNode {
                 return 1;
 
             case OP_INSERT_NODE:
+            case OP_NESTED_INSERT_NODE:
                 return 1;
 
             default:
                 return this.label.equals(((StringTreeNode) other).label) ? 0 : 1;
         }
+    }
+
+    @Override
+    public int positionOfChild(TreeNode child) {
+        for (int i = 0; i < this.children.size(); i++) {
+            if (this.children.get(i) == child)
+                return i;
+        }
+
+        return -1;
     }
 
     @Override

@@ -23,6 +23,13 @@ public interface TreeNode {
     TreeNode getParent();
 
     /**
+     * Returns the position of <code>child</code> among its siblings.
+     * @param child the child {@link TreeNode}
+     * @return the position of child
+     */
+    int positionOfChild(TreeNode child);
+
+    /**
      * Returns the cost of transforming this tree node using operation {@code operation};
      * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_DELETE_NODE} then {@code other} is <code>null</code> and the

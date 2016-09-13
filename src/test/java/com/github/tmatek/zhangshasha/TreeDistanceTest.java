@@ -76,7 +76,7 @@ public class TreeDistanceTest extends TestCase {
 
     public void testTreeDistance1() {
         TreeDistance.treeDistanceZhangShasha(StringTreeNode.fromStringRepresentation("4(1,2,3)"),
-                StringTreeNode.fromStringRepresentation("4(3(1,2))"));
+                StringTreeNode.fromStringRepresentation("5(3(1,2),4)"));
     }
 
 }

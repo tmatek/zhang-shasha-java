@@ -100,7 +100,6 @@ public class StringTreeNode implements TreeNode {
                 return 1;
 
             case OP_INSERT_NODE:
-            case OP_NESTED_INSERT_NODE:
                 return 1;
 
             default:

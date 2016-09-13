@@ -208,11 +208,11 @@ public final class TreeDistance {
             TreeTransformation t;
             switch (current.operation) {
                 case OP_INSERT_NODE:
-                case OP_NESTED_INSERT_NODE:
 
                     if (current.second != null) {
                         t = new TreeTransformation(current.operation, current.cost, current.first, current.second);
                         t.setPosition(current.first.getParent().positionOfChild(current.first));
+                        t.setSiblingCount(current.first.getChildren().size());
                     } else
                         t = new TreeTransformation(current.operation, current.cost, current.first);
 
@@ -290,14 +290,7 @@ public final class TreeDistance {
 
         for (int i = 1, k = lm2; i < bound2; i++, k++) {
             TreeNode t = postorder2.getInverse(k);
-            TreeNode parent = t.getParent();
-
-            if (parent == null)
-                forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t);
-            else
-                forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t, postorder1.getInverse
-                        (postorder2.get(parent)));
-
+            forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t, t.getParent());
             forestDistance[i][0].nextState = forestDistance[i - 1][0];
         }
 
@@ -312,14 +305,8 @@ public final class TreeDistance {
             for (int l = lm2, i = 1; l <= kr2; l++, i++) {
                 TreeNode first = postorder1.getInverse(k);
                 TreeNode second = postorder2.getInverse(l);
-                TreeNode parent = second.getParent();
 
-                ForestTrail insert;
-                if (parent == null)
-                    insert = new ForestTrail(TreeOperation.OP_NESTED_INSERT_NODE, second);
-                else
-                    insert = new ForestTrail(TreeOperation.OP_NESTED_INSERT_NODE, second, postorder1.getInverse
-                            (postorder2.get(parent)));
+                ForestTrail insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second, second.getParent());
                 insert.nextState = forestDistance[i - 1][j];
 
                 ForestTrail delete = new ForestTrail(TreeOperation.OP_DELETE_NODE, first);

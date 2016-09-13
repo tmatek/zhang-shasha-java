@@ -12,8 +12,9 @@ public class TreeTransformation {
     // nodes involved in operation
     private TreeNode firstNode, secondNode;
 
-    // in case of insert operation, the position of the inserted node
     private int position;
+
+    private int siblingCount;
 
     // the cost of performing this operation
     private int cost;
@@ -37,6 +38,15 @@ public class TreeTransformation {
      */
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    /**
+     * Sets the number of siblings for {@link TreeOperation#OP_INSERT_NODE} operation, whose position is higher than
+     * that of inserted node, to make children of the inserted node.
+     * @param siblingCount - the number of siblings to make children of the inserted node
+     */
+    public void setSiblingCount(int siblingCount) {
+        this.siblingCount = siblingCount;
     }
 
     public TreeOperation getOperation() {

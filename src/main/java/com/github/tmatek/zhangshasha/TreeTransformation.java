@@ -32,32 +32,60 @@ public class TreeTransformation {
         this.secondNode = secondNode;
     }
 
-    /**
-     * Sets the position of tree node insertion for {@link TreeOperation#OP_INSERT_NODE} operation.
-     * @param position - the position of tree node insertion for {@link TreeOperation#OP_INSERT_NODE} operation
-     */
     public void setPosition(int position) {
         this.position = position;
     }
 
-    /**
-     * Sets the number of siblings for {@link TreeOperation#OP_INSERT_NODE} operation, whose position is higher than
-     * that of inserted node, to make children of the inserted node.
-     * @param siblingCount - the number of siblings to make children of the inserted node
-     */
     public void setSiblingCount(int siblingCount) {
         this.siblingCount = siblingCount;
     }
 
+    /**
+     * Return the {@link TreeOperation} associated with this tree transformation.
+     * @return the {@link TreeOperation} associated with this tree transformation.
+     */
     public TreeOperation getOperation() {
         return operation;
     }
 
+    /**
+     * Return the cost of this tree transformation.
+     * @return the cost of this tree transformation
+     */
+    public int getCost() {
+        return cost;
+    }
+
+    /**
+     * The first node involved in this tree transformation.
+     * @return the first node involved in this tree transformation
+     */
     public TreeNode getFirstNode() {
         return firstNode;
     }
 
+    /**
+     * The second node involved in this tree transformation.
+     * @return the second node involved in this tree transformation
+     */
     public TreeNode getSecondNode() {
         return secondNode;
+    }
+
+    /**
+     * Returns the position of tree node insertion for {@link TreeOperation#OP_INSERT_NODE} operation.
+     * @return the position of tree node insertion for {@link TreeOperation#OP_INSERT_NODE} operation
+     */
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * Returns the number of siblings for {@link TreeOperation#OP_INSERT_NODE} operation, whose position is higher
+     * than the position of inserted node and who should become children of the inserted node.
+     * @return the number of siblings which should become children of the inserted node
+     */
+    public int getSiblingCount() {
+        return siblingCount;
     }
 }

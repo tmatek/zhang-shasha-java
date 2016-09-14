@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A simple tree node holding a string as its label.
  */
-public class StringTreeNode implements TreeNode {
+public class StringTreeNode implements EditableTreeNode {
 
     private static class StringHolder {
         String str;
@@ -47,14 +47,17 @@ public class StringTreeNode implements TreeNode {
 
                 if (parent == null)
                     return cur;
-                else
+                else {
                     parent.addChild(cur);
+                    cur.setParent(parent);
+                }
 
             } else if (c == ',' || c == ')') {
                 if (!node.equals("")) {
                     StringTreeNode cur = new StringTreeNode(node);
                     node = "";
                     parent.addChild(cur);
+                    cur.setParent(parent);
                 }
 
                 if (c == ')')
@@ -80,11 +83,10 @@ public class StringTreeNode implements TreeNode {
 
     public void addChild(StringTreeNode child) {
         this.children.add(child);
-        child.parent = this;
     }
 
     @Override
-    public Collection<? extends TreeNode> getChildren() {
+    public List<? extends TreeNode> getChildren() {
         return this.children;
     }
 
@@ -108,6 +110,11 @@ public class StringTreeNode implements TreeNode {
     }
 
     @Override
+    public TreeNode cloneNode() {
+        return new StringTreeNode(this.label);
+    }
+
+    @Override
     public int positionOfChild(TreeNode child) {
         for (int i = 0; i < this.children.size(); i++) {
             if (this.children.get(i) == child)
@@ -120,5 +127,49 @@ public class StringTreeNode implements TreeNode {
     @Override
     public String toString() {
         return this.label;
+    }
+
+    public String toTreeString() {
+        StringBuilder sb = new StringBuilder(this.label);
+
+        if (this.children.size() > 0)
+            sb.append("(");
+
+        for (StringTreeNode child : this.children) {
+            sb.append(child.toTreeString());
+
+            if (child != this.children.get(this.children.size() - 1))
+                sb.append(",");
+        }
+
+        if (this.children.size() > 0)
+            sb.append(")");
+
+        return sb.toString();
+    }
+
+    @Override
+    public void setParent(TreeNode newParent) {
+        this.parent = (StringTreeNode) newParent;
+    }
+
+    @Override
+    public void addChildAt(TreeNode child, int position) {
+        if (position > this.children.size()) {
+            this.addChild((StringTreeNode) child);
+            return;
+        }
+
+        this.children.add(position, (StringTreeNode) child);
+    }
+
+    @Override
+    public void renameNodeTo(TreeNode other) {
+        this.label = ((StringTreeNode) other).label;
+    }
+
+    @Override
+    public void deleteChild(TreeNode child) {
+        this.children.remove(child);
     }
 }

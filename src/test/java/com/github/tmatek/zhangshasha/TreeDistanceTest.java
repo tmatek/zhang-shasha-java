@@ -3,6 +3,7 @@ package com.github.tmatek.zhangshasha;
 
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,8 +76,19 @@ public class TreeDistanceTest extends TestCase {
     }
 
     public void testTreeDistance1() {
-        TreeDistance.treeDistanceZhangShasha(StringTreeNode.fromStringRepresentation("4(1,2,3)"),
-                StringTreeNode.fromStringRepresentation("5(3(1,2),4)"));
+        StringTreeNode t1 = StringTreeNode.fromStringRepresentation("4(1,2,3)");
+        StringTreeNode t2 = StringTreeNode.fromStringRepresentation("5(3(1,2),4)");
+        List<TreeTransformation> t = TreeDistance.treeDistanceZhangShasha(t1, t2);
+        t1 = (StringTreeNode) TreeDistance.transformTree(t1, t);
+        System.out.println(t1.toTreeString());
+    }
+
+    private static int treeDistance(List<TreeTransformation> transformations) {
+        int sum = 0;
+        for (TreeTransformation t : transformations)
+            sum += t.getCost();
+
+        return sum;
     }
 
 }

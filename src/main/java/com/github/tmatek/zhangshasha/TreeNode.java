@@ -1,7 +1,5 @@
 package com.github.tmatek.zhangshasha;
 
-
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,7 +12,7 @@ public interface TreeNode {
      * Returns a collection of children of this node, each children having this node as its parent.
      * @return a collection of children of this node
      */
-    Collection<? extends TreeNode> getChildren();
+    List<? extends TreeNode> getChildren();
 
     /**
      * Returns the parent node of this tree node or null if this node is the root of the tree structure.
@@ -30,14 +28,19 @@ public interface TreeNode {
     int positionOfChild(TreeNode child);
 
     /**
+     * Returns a shallow copy of this tree node, ignoring children and parent relationships.
+     * @return a shallow copy of this tree node
+     */
+    TreeNode cloneNode();
+
+    /**
      * Returns the cost of transforming this tree node using operation {@code operation};
      * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_DELETE_NODE} then {@code other} is <code>null</code> and the
      * cost of removing this tree node should be returned.
      * <br><br>
-     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then this object represents the tree node
-     * which will be inserted as a child of {@code other} tree node - the insert cost should be returned. It is possible
-     * that {@code other} is <code>null</code>; in those cases, the cost of inserting a new root node should be returned.
+     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then {@code other} is <code>null</code> and the
+     * cost of inserting this tree node should be returned.
      * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_RENAME_NODE} then the cost of renaming this tree node to
      * {@code other} tree node should be returned.

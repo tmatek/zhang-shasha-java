@@ -7,6 +7,8 @@ import java.util.*;
  */
 public final class TreeDistance {
 
+    private static final int HIGH_COST = 100000;
+
     private TreeDistance() {
     }
 
@@ -301,6 +303,10 @@ public final class TreeDistance {
             TreeNode t = postorder1.getInverse(l);
             forestDistance[0][j] = new ForestTrail(TreeOperation.OP_DELETE_NODE, t);
             forestDistance[0][j].nextState = forestDistance[0][j - 1];
+
+            // prevent removing the root node
+            if (t.getParent() == null)
+                forestDistance[0][j].cost = HIGH_COST;
         }
 
         // fill in the rest of forest distances
@@ -314,6 +320,10 @@ public final class TreeDistance {
 
                 ForestTrail delete = new ForestTrail(TreeOperation.OP_DELETE_NODE, first);
                 delete.nextState = forestDistance[i][j - 1];
+
+                // prevent removing the root node
+                if (first.getParent() == null)
+                    delete.cost = HIGH_COST;
 
                 // both keyroots present a tree
                 ForestTrail rename = new ForestTrail(TreeOperation.OP_RENAME_NODE, first, second);

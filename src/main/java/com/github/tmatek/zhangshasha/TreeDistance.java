@@ -188,7 +188,8 @@ public final class TreeDistance {
             }
         }
 
-        applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations, null);
+        applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations,
+                new IdentityHashMap<>());
         return transformations;
     }
 
@@ -199,27 +200,29 @@ public final class TreeDistance {
      * @param current the current {@link ForestTrail} object in the serie
      * @param ref the list in which to store {@link TreeTransformation} objects
      */
-    private static void applyForestTrails(ForestTrail current, List<TreeTransformation> ref, TreeNode parent) {
+    private static void applyForestTrails(ForestTrail current, List<TreeTransformation> ref,
+                                          IdentityHashMap<TreeNode, TreeNode> matchedNodes) {
         if (current.nextState == null)
             return;
 
         if (current.treeState != null) {
-            applyForestTrails(current.nextState, ref, parent);
-            applyForestTrails(current.treeState, ref, parent);
+            applyForestTrails(current.nextState, ref, matchedNodes);
+            applyForestTrails(current.treeState, ref, matchedNodes);
         } else {
             TreeTransformation t;
             switch (current.operation) {
                 case OP_INSERT_NODE:
                     TreeNode clone = current.first.cloneNode();
+                    matchedNodes.put(current.first, clone);
 
-                    if (parent != null) {
-                        t = new TreeTransformation(current.operation, current.cost, clone, parent);
+                    if (current.second != null) {
+                        t = new TreeTransformation(current.operation, current.cost, clone, matchedNodes.get(current
+                                .second));
                         t.setPosition(current.first.getParent().positionOfChild(current.first));
-                        t.setSiblingCount(current.first.getChildren().size());
+                        t.setChildrenCount(current.first.getParent().getChildren().size());
                     } else
                         t = new TreeTransformation(current.operation, current.cost, clone);
 
-                    parent = clone;
                     break;
 
                 case OP_DELETE_NODE:
@@ -228,11 +231,11 @@ public final class TreeDistance {
 
                 default:
                     t = new TreeTransformation(current.operation, current.cost, current.first, current.second);
-                    parent = current.first;
+                    matchedNodes.put(current.second, current.first);
             }
 
             ref.add(t);
-            applyForestTrails(current.nextState, ref, parent);
+            applyForestTrails(current.nextState, ref, matchedNodes);
         }
     }
 
@@ -295,7 +298,7 @@ public final class TreeDistance {
 
         for (int i = 1, k = lm2; i < bound2; i++, k++) {
             TreeNode t = postorder2.getInverse(k);
-            forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t);
+            forestDistance[i][0] = new ForestTrail(TreeOperation.OP_INSERT_NODE, t, t.getParent());
             forestDistance[i][0].nextState = forestDistance[i - 1][0];
         }
 
@@ -315,7 +318,7 @@ public final class TreeDistance {
                 TreeNode first = postorder1.getInverse(k);
                 TreeNode second = postorder2.getInverse(l);
 
-                ForestTrail insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second);
+                ForestTrail insert = new ForestTrail(TreeOperation.OP_INSERT_NODE, second, second.getParent());
                 insert.nextState = forestDistance[i - 1][j];
 
                 ForestTrail delete = new ForestTrail(TreeOperation.OP_DELETE_NODE, first);
@@ -373,11 +376,19 @@ public final class TreeDistance {
                         // insert a child and make siblings right to it new children
                         EditableTreeNode parent = (EditableTreeNode) t.getSecondNode();
                         EditableTreeNode inserted = (EditableTreeNode) t.getFirstNode();
+
+                        if (t.getChildrenCount() > parent.getChildren().size())
+                            t.setPosition(parent.getChildren().size() - t.getChildrenCount() + 1 + t.getPosition());
+
                         parent.addChildAt(inserted, t.getPosition());
                         inserted.setParent(parent);
 
-                        List<? extends TreeNode> toRemove = parent.getChildren().subList(t.getPosition() + 1, Math
-                                .min(t.getPosition() + 1 + t.getSiblingCount(), parent.getChildren().size()));
+                        int siblingCount = Math.max(0, parent.getChildren().size() - t.getChildrenCount());
+                        if (siblingCount == 0)
+                            break;
+
+                        List<? extends TreeNode> toRemove = parent.getChildren().subList(t.getPosition() + 1, t
+                                .getPosition() + 1 + siblingCount);
 
                         for (int i = toRemove.size() - 1; i >= 0; i--) {
                             inserted.addChildAt(toRemove.get(i), 0);

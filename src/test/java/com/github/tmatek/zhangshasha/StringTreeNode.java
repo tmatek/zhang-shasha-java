@@ -155,11 +155,6 @@ public class StringTreeNode implements EditableTreeNode {
 
     @Override
     public void addChildAt(TreeNode child, int position) {
-        if (position > this.children.size()) {
-            this.addChild((StringTreeNode) child);
-            return;
-        }
-
         this.children.add(position, (StringTreeNode) child);
     }
 

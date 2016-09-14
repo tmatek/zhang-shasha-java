@@ -14,7 +14,7 @@ public class TreeTransformation {
 
     private int position;
 
-    private int siblingCount;
+    private int childrenCount;
 
     // the cost of performing this operation
     private int cost;
@@ -36,8 +36,8 @@ public class TreeTransformation {
         this.position = position;
     }
 
-    public void setSiblingCount(int siblingCount) {
-        this.siblingCount = siblingCount;
+    public void setChildrenCount(int childrenCount) {
+        this.childrenCount = childrenCount;
     }
 
     /**
@@ -81,11 +81,12 @@ public class TreeTransformation {
     }
 
     /**
-     * Returns the number of siblings for {@link TreeOperation#OP_INSERT_NODE} operation, whose position is higher
-     * than the position of inserted node and who should become children of the inserted node.
-     * @return the number of siblings which should become children of the inserted node
+     * For {@link TreeOperation#OP_INSERT_NODE}, returns the final number of children that the parent of
+     * the inserted node should have in the end. This is needed to calculate how many siblings right of inserted node
+     * should become children of the inserted node, to satisfy the final number of children.
+     * @return the final number of children that the parent of inserted node should have in the end
      */
-    public int getSiblingCount() {
-        return siblingCount;
+    public int getChildrenCount() {
+        return childrenCount;
     }
 }

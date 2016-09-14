@@ -83,11 +83,43 @@ public class TreeDistanceTest extends TestCase {
 
         t1 = (StringTreeNode) TreeDistance.transformTree(t1, tr);
         assertEquals(b, t1.toTreeString());
+
+        t1 = StringTreeNode.fromStringRepresentation(a);
+        tr = TreeDistance.treeDistanceZhangShasha(t2, t1);
+        t2 = (StringTreeNode) TreeDistance.transformTree(t2, tr);
+        assertEquals(a, t2.toTreeString());
     }
 
-    public void testTreeTransformation() {
+    public void testTransformTree() {
         assertTreesMatchAfterTransformation("4(1,2,3)", "5(3(1,2),4)");
-        assertTreesMatchAfterTransformation("5(3(1,2),4)", "4(1,2,3)");
+        assertTreesMatchAfterTransformation("a(b(d,e),c(f,g))", "a(b(c(d,e,f)))");
+        assertTreesMatchAfterTransformation("a(b(c,d),e(f(i,j),g,h(k)))", "a(b(c(d(e))))");
+        assertTreesMatchAfterTransformation("a(b(c(d(e))))", "a(b(c,d),e(f(i,j),g,h(k)))");
+        assertTreesMatchAfterTransformation("a(d)", "a(b,c,d)");
+        assertTreesMatchAfterTransformation("f(d(a,c(b)),e)", "f(c(d(a,b)),e)");
+        assertTreesMatchAfterTransformation("a(b)", "a(b)");
+    }
+
+    private static int treeDistance(List<TreeTransformation> transformations) {
+        int sum = 0;
+        for (TreeTransformation t : transformations)
+            sum += t.getCost();
+
+        return sum;
+    }
+
+    private static void assertTreeDistanceEquals(String a, String b, int expected) {
+        StringTreeNode t1 = StringTreeNode.fromStringRepresentation(a),
+                t2 = StringTreeNode.fromStringRepresentation(b);
+
+        List<TreeTransformation> tr = TreeDistance.treeDistanceZhangShasha(t1, t2);
+        assertEquals(expected, treeDistance(tr));
+    }
+
+    public void testTreeDistance() {
+        assertTreeDistanceEquals("a(b)", "a(b)", 0);
+        assertTreeDistanceEquals("a(c)", "a(d)", 1);
+        assertTreeDistanceEquals("4(1,2,3)", "4(3(1,2))", 2);
     }
 
 }

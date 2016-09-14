@@ -151,7 +151,8 @@ public final class TreeDistance {
     }
 
     /**
-     * Calculates the tree distance between tree <code>t1</code> and <code>t2</code>.
+     * Calculates the tree distance between tree <code>t1</code> and <code>t2</code>, taking into account that both
+     * trees are ordered i.e. the order of siblings is important.
      * Returns a list of tree transformations required to transform tree <code>t1</code> to <code>t2</code>.
      * Every transformation has an associated cost. The sum of costs of all transformations is the tree distance
      * between <code>t1</code> and <code>t2</code>. The sum of costs is minimal.
@@ -199,6 +200,7 @@ public final class TreeDistance {
      * distances, while {@link TreeTransformation} are public.
      * @param current the current {@link ForestTrail} object in the serie
      * @param ref the list in which to store {@link TreeTransformation} objects
+     * @param matchedNodes a mapping of matched/inserted nodes
      */
     private static void applyForestTrails(ForestTrail current, List<TreeTransformation> ref,
                                           IdentityHashMap<TreeNode, TreeNode> matchedNodes) {

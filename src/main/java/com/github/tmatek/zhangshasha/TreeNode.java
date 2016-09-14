@@ -39,8 +39,9 @@ public interface TreeNode {
      * If {@code operation} equals {@link TreeOperation#OP_DELETE_NODE} then {@code other} is <code>null</code> and the
      * cost of removing this tree node should be returned.
      * <br><br>
-     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then {@code other} is <code>null</code> and the
-     * cost of inserting this tree node should be returned.
+     * If {@code operation} equals {@link TreeOperation#OP_INSERT_NODE} then the cost of inserting this tree node as
+     * a child of {@code other} should be returned. Note that {@code other} can also be <code>null</code>, in those
+     * cases the cost of inserting a new root node should be returned.
      * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_RENAME_NODE} then the cost of renaming this tree node to
      * {@code other} tree node should be returned.

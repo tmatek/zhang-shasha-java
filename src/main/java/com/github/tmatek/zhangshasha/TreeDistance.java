@@ -442,10 +442,12 @@ public final class TreeDistance {
 
                         List<TreeNode> toRemove = new ArrayList<>();
                         for (TreeNode child : parent.getChildren()) {
-                            if (t.getDescendants().contains(child)) {
-                                toRemove.add(child);
-                                inserted.addChildAt(child, inserted.getChildren().size());
-                                ((EditableTreeNode) child).setParent(inserted);
+                            for (TreeNode desc : t.getDescendants()) {
+                                if (desc == child) {
+                                    toRemove.add(child);
+                                    inserted.addChildAt(child, inserted.getChildren().size());
+                                    ((EditableTreeNode) child).setParent(inserted);
+                                }
                             }
                         }
 

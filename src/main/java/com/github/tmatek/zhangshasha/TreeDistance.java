@@ -151,20 +151,31 @@ public final class TreeDistance {
     }
 
     /**
-     * Calculates the tree distance between tree <code>t1</code> and <code>t2</code>, taking into account that both
+     * Calculates the tree distance between tree {@code t1} and {@code t2}, taking into account that both
      * trees are ordered i.e. the order of siblings is important.
-     * Returns a list of tree transformations required to transform tree <code>t1</code> to <code>t2</code>.
+     * Returns a list of tree transformations required to transform tree {@code t1} to {@code t2}.
      * Every transformation has an associated cost. The sum of costs of all transformations is the tree distance
-     * between <code>t1</code> and <code>t2</code>. The sum of costs is minimal.
+     * between {@code t1} and {@code t2}. The sum of costs is minimal.
      * <br><br>
+     *
+     * The list of transformations should be applied in the order returned, as according to K. Zhang et al.:<br><br>
+     * {@code "}To construct the sequence of editing operations, simply perform all the deletes indicated by the
+     * mapping (i.e., all nodes in T having no lines attached to them are deleted), then all relabellings, then all
+     * inserts.{@code "}
+     * <br><br>
+     *
      * For further information see paper by K. Zhang et al.:
      * <a href="http://grantjenks.com/wiki/_media/ideas/simple_fast_algorithms_for_the_editing_distance_between_tree_and_related_problems.pdf">Simple fast algorithms for the editing distance between trees and related problems</a>
      *
      * @param t1 the first tree structure
      * @param t2 the second tree structure
+     * @throws IllegalArgumentException if {@code t1} or {@code t2} is {@code null}.
      * @return a list of tree transformations required to transform first tree into the second
      */
     public static List<TreeTransformation> treeDistanceZhangShasha(TreeNode t1, TreeNode t2) {
+
+        if (t1 == null || t2 == null)
+            throw new IllegalArgumentException("Both tree structures must not be null");
 
         // prepare postorder numbering
         ReversibleIdentityMap<TreeNode, Integer> postorder1 = getPostorderIdentifiers(t1),
@@ -191,6 +202,7 @@ public final class TreeDistance {
 
         applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations,
                 new IdentityHashMap<>());
+        Collections.sort(transformations);
         return transformations;
     }
 
@@ -221,7 +233,7 @@ public final class TreeDistance {
                         t = new TreeTransformation(current.operation, current.cost, clone, matchedNodes.get(current
                                 .second));
                         t.setPosition(current.first.getParent().positionOfChild(current.first));
-                        t.setChildrenCount(current.first.getParent().getChildren().size());
+                        t.setChildrenCount(current.second.getChildren().size());
                     } else
                         t = new TreeTransformation(current.operation, current.cost, clone);
 
@@ -238,6 +250,28 @@ public final class TreeDistance {
 
             ref.add(t);
             applyForestTrails(current.nextState, ref, matchedNodes);
+
+            if (current.operation == TreeOperation.OP_INSERT_NODE) {
+                List<TreeNode> descendants = new ArrayList<>();
+                populateDescendants(current.first, matchedNodes, descendants);
+                t.setDescendants(descendants);
+            }
+        }
+    }
+
+    /**
+     * Stores all descendants of tree node {@code cur} but with references to their clones, given by mapping {@code
+     * map}.
+     * @param cur - the current tree node being visited
+     * @param map - a mapping of tree nodes to their cloned counterparts
+     * @param ref - the reference list in which to store the descendants
+     */
+    private static void populateDescendants(TreeNode cur, IdentityHashMap<TreeNode, TreeNode> map, List<TreeNode> ref) {
+        for (TreeNode child : cur.getChildren()) {
+            if (map.containsKey(child))
+                ref.add(map.get(child));
+
+            populateDescendants(child, map, ref);
         }
     }
 
@@ -356,7 +390,7 @@ public final class TreeDistance {
     }
 
     /**
-     * Transform the tree given by the root node <code>root</code> using a list of <code>transformations</code>
+     * Transform the tree given by the root node {@code root} using a list of {@code transformations}
      * obtained by the call to {@link TreeDistance#treeDistanceZhangShasha(TreeNode, TreeNode)}. This operation does
      * not produce a copy of the original tree, but makes all modifications in-place.
      * @param root the root of the tree being transformed
@@ -375,29 +409,25 @@ public final class TreeDistance {
                         root.setParent(inserted);
                         root = inserted;
                     } else {
-                        // insert a child and make siblings right to it new children
+                        // insert a child and make demoted siblings its new children
                         EditableTreeNode parent = (EditableTreeNode) t.getSecondNode();
                         EditableTreeNode inserted = (EditableTreeNode) t.getFirstNode();
 
-                        if (t.getChildrenCount() > parent.getChildren().size())
-                            t.setPosition(parent.getChildren().size() - t.getChildrenCount() + 1 + t.getPosition());
-
-                        parent.addChildAt(inserted, t.getPosition());
-                        inserted.setParent(parent);
-
-                        int siblingCount = Math.max(0, parent.getChildren().size() - t.getChildrenCount());
-                        if (siblingCount == 0)
-                            break;
-
-                        List<? extends TreeNode> toRemove = parent.getChildren().subList(t.getPosition() + 1, t
-                                .getPosition() + 1 + siblingCount);
-
-                        for (int i = toRemove.size() - 1; i >= 0; i--) {
-                            inserted.addChildAt(toRemove.get(i), 0);
-                            ((EditableTreeNode) toRemove.get(i)).setParent(inserted);
+                        List<TreeNode> toRemove = new ArrayList<>();
+                        for (TreeNode child : parent.getChildren()) {
+                            if (t.getDescendants().contains(child)) {
+                                toRemove.add(child);
+                                inserted.addChildAt(child, inserted.getChildren().size());
+                                ((EditableTreeNode) child).setParent(inserted);
+                            }
                         }
 
-                        toRemove.clear();
+                        for (TreeNode child : toRemove)
+                            parent.deleteChild(child);
+
+                        parent.addChildAt(inserted, Math.max(0, parent.getChildren().size() - t.getChildrenCount() + 1
+                                + t.getPosition()));
+                        inserted.setParent(parent);
                     }
 
                     break;

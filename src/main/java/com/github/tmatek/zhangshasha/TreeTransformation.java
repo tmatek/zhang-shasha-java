@@ -1,11 +1,14 @@
 package com.github.tmatek.zhangshasha;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A single tree transformation is a part of a series of tree structure edits, which transform one tree structure into
  * another. Each tree transformation is uniquely identified by the {@link TreeOperation}, the cost of the operation and
  * corresponding {@link TreeNode}s.
  */
-public class TreeTransformation {
+public class TreeTransformation implements Comparable<TreeTransformation> {
 
     private TreeOperation operation;
 
@@ -13,6 +16,8 @@ public class TreeTransformation {
     private TreeNode firstNode, secondNode;
 
     private int position;
+
+    private List<TreeNode> descendants = new ArrayList<>();
 
     private int childrenCount;
 
@@ -34,6 +39,10 @@ public class TreeTransformation {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public void setDescendants(List<TreeNode> descendants) {
+        this.descendants = descendants;
     }
 
     public void setChildrenCount(int childrenCount) {
@@ -81,12 +90,21 @@ public class TreeTransformation {
     }
 
     /**
-     * For {@link TreeOperation#OP_INSERT_NODE}, returns the final number of children that the parent of
-     * the inserted node should have in the end. This is needed to calculate how many siblings right of inserted node
-     * should become children of the inserted node, to satisfy the final number of children.
-     * @return the final number of children that the parent of inserted node should have in the end
+     * For {@link TreeOperation#OP_INSERT_NODE}, returns the list of {@link TreeNode} descendants of the tree node
+     * being inserted. This is necessary in order to know which siblings of the inserted node should be demoted i.e.
+     * their status changed from children to grandchildren.
+     * @return the list of descendants that are candidates for demotion
      */
+    public List<TreeNode> getDescendants() {
+        return descendants;
+    }
+
     public int getChildrenCount() {
-        return childrenCount;
+        return this.childrenCount;
+    }
+
+    @Override
+    public int compareTo(TreeTransformation o) {
+        return this.operation.ordinal() - o.getOperation().ordinal();
     }
 }

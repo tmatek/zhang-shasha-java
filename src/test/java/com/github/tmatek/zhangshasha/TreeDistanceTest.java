@@ -98,6 +98,13 @@ public class TreeDistanceTest extends TestCase {
         assertTreesMatchAfterTransformation("a(d)", "a(b,c,d)");
         assertTreesMatchAfterTransformation("f(d(a,c(b)),e)", "f(c(d(a,b)),e)");
         assertTreesMatchAfterTransformation("a(b)", "a(b)");
+        assertTreesMatchAfterTransformation("a(b,b,c(c))", "d(a,a,a)");
+        assertTreesMatchAfterTransformation("f(d(a,c(b)),e)", "f(c(d(a,b)),e)");
+
+        for (int i = 0; i < 100; i++) {
+            assertTreesMatchAfterTransformation(StringTreeNode.randomTree(5, 4).toTreeString(),
+                    StringTreeNode.randomTree(5, 4).toTreeString());
+        }
     }
 
     private static int treeDistance(List<TreeTransformation> transformations) {

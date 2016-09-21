@@ -3,6 +3,7 @@ package com.github.tmatek.zhangshasha;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A simple tree node holding a string as its label.
@@ -68,7 +69,30 @@ public class StringTreeNode implements EditableTreeNode {
             }
         }
 
+        if (!node.equals(""))
+            return new StringTreeNode(node);
+
         return null;
+    }
+
+    public static StringTreeNode randomTree(int maxDepth, int maxChildren) {
+        Random r = new Random();
+        StringTreeNode root = new StringTreeNode((char)(r.nextInt(26) + 'a') + "");
+        randomTreeRec(root, 1, maxDepth, maxChildren, r);
+        return root;
+    }
+
+    private static void randomTreeRec(StringTreeNode current, int depth, int maxDepth, int maxChildren, Random r) {
+        if (depth > maxDepth)
+            return;
+
+        int nChildren = r.nextInt(maxChildren);
+        for (int i = 0; i < nChildren; i++) {
+            StringTreeNode child = new StringTreeNode((char)(r.nextInt(26) + 'a') + "");
+            current.addChild(child);
+            child.setParent(current);
+            randomTreeRec(child, depth + 1, maxDepth, maxChildren, r);
+        }
     }
 
     private List<StringTreeNode> children = new ArrayList<>();

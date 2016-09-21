@@ -1,5 +1,6 @@
 package com.github.tmatek.zhangshasha;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -7,9 +8,9 @@ import java.util.Map;
  * An identity map which compares its keys according to object references, but also allows reversal of its entries.
  * @see IdentityHashMap
  */
-public class ReversibleIdentityMap<K, V> extends IdentityHashMap<K, V> {
+class ReversibleIdentityMap<K, V> extends IdentityHashMap<K, V> {
 
-    private IdentityHashMap<V, K> inverse = new IdentityHashMap<V, K>();
+    private HashMap<V, K> inverse = new HashMap<>();
 
     @Override
     public V put(K key, V value) {
@@ -40,5 +41,9 @@ public class ReversibleIdentityMap<K, V> extends IdentityHashMap<K, V> {
      */
     public K getInverse(V value) {
         return this.inverse.get(value);
+    }
+
+    public Map<V, K> getBack() {
+        return this.inverse;
     }
 }

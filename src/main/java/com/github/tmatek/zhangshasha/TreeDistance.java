@@ -1,5 +1,6 @@
 package com.github.tmatek.zhangshasha;
 
+import java.awt.datatransfer.SystemFlavorMap;
 import java.util.*;
 
 /**
@@ -203,6 +204,7 @@ public final class TreeDistance {
         applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations,
                 new IdentityHashMap<>());
         Collections.sort(transformations);
+
         return transformations;
     }
 

@@ -75,8 +75,7 @@ public class StringTreeNode implements EditableTreeNode {
         return null;
     }
 
-    public static StringTreeNode randomTree(int maxDepth, int maxChildren) {
-        Random r = new Random();
+    public static StringTreeNode randomTree(int maxDepth, int maxChildren, Random r) {
         StringTreeNode root = new StringTreeNode((char)(r.nextInt(26) + 'a') + "");
         randomTreeRec(root, 1, maxDepth, maxChildren, r);
         return root;

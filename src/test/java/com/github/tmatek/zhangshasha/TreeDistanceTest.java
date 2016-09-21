@@ -6,8 +6,11 @@ import junit.framework.TestCase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class TreeDistanceTest extends TestCase {
+
+    private static long RANDOM_SEED = 9999; // used for reproducible tests using random trees
 
     public void testGetPostorderIdentifiers() {
         StringTreeNode first = StringTreeNode.fromStringRepresentation("A(B(C,D,E(F)),G)");
@@ -101,9 +104,11 @@ public class TreeDistanceTest extends TestCase {
         assertTreesMatchAfterTransformation("a(b,b,c(c))", "d(a,a,a)");
         assertTreesMatchAfterTransformation("f(d(a,c(b)),e)", "f(c(d(a,b)),e)");
 
+        Random r = new Random();
+        r.setSeed(RANDOM_SEED);
         for (int i = 0; i < 100; i++) {
-            assertTreesMatchAfterTransformation(StringTreeNode.randomTree(5, 4).toTreeString(),
-                    StringTreeNode.randomTree(5, 4).toTreeString());
+            assertTreesMatchAfterTransformation(StringTreeNode.randomTree(3, 8, r).toTreeString(),
+                    StringTreeNode.randomTree(6, 2, r).toTreeString());
         }
     }
 
@@ -127,6 +132,13 @@ public class TreeDistanceTest extends TestCase {
         assertTreeDistanceEquals("a(b)", "a(b)", 0);
         assertTreeDistanceEquals("a(c)", "a(d)", 1);
         assertTreeDistanceEquals("4(1,2,3)", "4(3(1,2))", 2);
+
+        Random r = new Random();
+        r.setSeed(RANDOM_SEED);
+        for (int i = 0; i < 100; i++) {
+            String tree = StringTreeNode.randomTree(5, 4, r).toTreeString();
+            assertTreeDistanceEquals(tree, tree, 0);
+        }
     }
 
 }

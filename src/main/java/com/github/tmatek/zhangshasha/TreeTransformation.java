@@ -99,6 +99,11 @@ public class TreeTransformation implements Comparable<TreeTransformation> {
         return descendants;
     }
 
+    /**
+     * For {@link TreeOperation#OP_INSERT_NODE} returns the number of children of
+     * {@link TreeTransformation#getSecondNode()}, so that the insertion position can be calculated.
+     * @return the number of children of {@link TreeTransformation#getSecondNode()}
+     */
     public int getChildrenCount() {
         return this.childrenCount;
     }

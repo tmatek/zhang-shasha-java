@@ -154,6 +154,24 @@ public final class TreeDistance {
     /**
      * Calculates the tree distance between tree {@code t1} and {@code t2}, taking into account that both
      * trees are ordered i.e. the order of siblings is important.
+     * Returns the tree distance between {@code t1} and {@code t2} i.e. the minimal sum of costs of all tree
+     * transformations required to transform one tree into another.<br><br>
+     *
+     * For further information see paper by K. Zhang et al.:
+     * <a href="http://grantjenks.com/wiki/_media/ideas/simple_fast_algorithms_for_the_editing_distance_between_tree_and_related_problems.pdf">Simple fast algorithms for the editing distance between trees and related problems</a>
+     *
+     * @param t1 the first tree structure
+     * @param t2 the second tree structure
+     * @throws IllegalArgumentException if {@code t1} or {@code t2} is {@code null}.
+     * @return the tree distance between {@code t1} and {@code t2}
+     */
+    public static int treeDistanceZhangShasha(TreeNode t1, TreeNode t2) {
+        return treeDistanceZhangShasha(t1, t2, null);
+    }
+
+    /**
+     * Calculates the tree distance between tree {@code t1} and {@code t2}, taking into account that both
+     * trees are ordered i.e. the order of siblings is important.
      * Returns a list of tree transformations required to transform tree {@code t1} to {@code t2}.
      * Every transformation has an associated cost. The sum of costs of all transformations is the tree distance
      * between {@code t1} and {@code t2}. The sum of costs is minimal.
@@ -173,7 +191,13 @@ public final class TreeDistance {
      * @throws IllegalArgumentException if {@code t1} or {@code t2} is {@code null}.
      * @return a list of tree transformations required to transform first tree into the second
      */
-    public static List<TreeTransformation> treeDistanceZhangShasha(TreeNode t1, TreeNode t2) {
+    public static List<TreeTransformation> treeDistanceZhangShasha(EditableTreeNode t1, EditableTreeNode t2) {
+        List<TreeTransformation> transformations = new ArrayList<>();
+        treeDistanceZhangShasha(t1, t2, transformations);
+        return transformations;
+    }
+
+    private static int treeDistanceZhangShasha(TreeNode t1, TreeNode t2, List<TreeTransformation> transformations) {
 
         if (t1 == null || t2 == null)
             throw new IllegalArgumentException("Both tree structures must not be null");
@@ -192,7 +216,6 @@ public final class TreeDistance {
 
         // prepare tree distance table and transformation list
         ForestTrail[][] treeDistance = new ForestTrail[postorder2.get(t2) + 1][postorder1.get(t1) + 1];
-        List<TreeTransformation> transformations = new ArrayList<>();
 
         // calculate tree distance
         for (TreeNode keyRoot1 : keyRoots1) {
@@ -201,11 +224,13 @@ public final class TreeDistance {
             }
         }
 
-        applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations,
-                new IdentityHashMap<>());
-        Collections.sort(transformations);
+        if (transformations != null) {
+            applyForestTrails(treeDistance[postorder2.get(t2)][postorder1.get(t1)], transformations, new
+                    IdentityHashMap<>());
+            Collections.sort(transformations);
+        }
 
-        return transformations;
+        return treeDistance[postorder2.get(t2)][postorder1.get(t1)].getTotalCost();
     }
 
     /**
@@ -228,7 +253,7 @@ public final class TreeDistance {
             TreeTransformation t;
             switch (current.operation) {
                 case OP_INSERT_NODE:
-                    TreeNode clone = current.first.cloneNode();
+                    TreeNode clone = ((EditableTreeNode) current.first).cloneNode();
                     matchedNodes.put(current.first, clone);
 
                     if (current.second != null) {

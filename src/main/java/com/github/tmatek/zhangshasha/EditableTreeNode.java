@@ -9,6 +9,12 @@ package com.github.tmatek.zhangshasha;
 public interface EditableTreeNode extends TreeNode {
 
     /**
+     * Returns a shallow copy of this tree node, ignoring children and parent relationships.
+     * @return a shallow copy of this tree node
+     */
+    TreeNode cloneNode();
+
+    /**
      * Sets a new parent node of this node
      * @param newParent the new parent node
      */

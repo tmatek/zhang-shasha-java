@@ -124,8 +124,7 @@ public class TreeDistanceTest extends TestCase {
         StringTreeNode t1 = StringTreeNode.fromStringRepresentation(a),
                 t2 = StringTreeNode.fromStringRepresentation(b);
 
-        List<TreeTransformation> tr = TreeDistance.treeDistanceZhangShasha(t1, t2);
-        assertEquals(expected, treeDistance(tr));
+        assertEquals(expected, TreeDistance.treeDistanceZhangShasha((TreeNode) t1, (TreeNode) t2));
     }
 
     public void testTreeDistance() {

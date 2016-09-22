@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.tmatek</groupId>
     <artifactId>zhang-shasha-java</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -34,7 +34,7 @@
         <url>https://github.com/tmatek/zhang-shasha-java</url>
         <connection>scm:git:git://github.com/tmatek/zhang-shasha-java.git</connection>
         <developerConnection>scm:git:git@github.com:tmatek/zhang-shasha-java.git</developerConnection>
-      <tag>1.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>

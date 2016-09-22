@@ -1,6 +1,5 @@
 package com.github.tmatek.zhangshasha;
 
-import java.awt.datatransfer.SystemFlavorMap;
 import java.util.*;
 
 /**

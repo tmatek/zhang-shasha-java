@@ -39,7 +39,8 @@ public interface TreeNode {
      * <br><br>
      * If {@code operation} equals {@link TreeOperation#OP_RENAME_NODE} then the cost of renaming this tree node to
      * {@code other} tree node should be returned.
-     * @param operation the type of tree operation being performed, {@see TreeOperation}
+     *
+     * @param operation the type of tree operation being performed
      * @param other the tree node into which this node is being transformed
      * @return the cost of transforming this tree node using specified operation
      */

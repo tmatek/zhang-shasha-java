@@ -1,10 +1,12 @@
 package com.github.tmatek.zhangshasha;
 
 /**
- * Possible tree operations which transform one tree to another
+ * Possible tree operations which transform one tree to another:
+ * <ul>
  * <li>{@link #OP_DELETE_NODE}</li>
  * <li>{@link #OP_RENAME_NODE}</li>
  * <li>{@link #OP_INSERT_NODE}</li>
+ * </ul>
  */
 public enum TreeOperation {
 

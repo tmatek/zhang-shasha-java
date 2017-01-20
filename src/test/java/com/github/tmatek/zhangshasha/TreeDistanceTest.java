@@ -131,6 +131,7 @@ public class TreeDistanceTest extends TestCase {
         assertTreeDistanceEquals("a(b)", "a(b)", 0);
         assertTreeDistanceEquals("a(c)", "a(d)", 1);
         assertTreeDistanceEquals("4(1,2,3)", "4(3(1,2))", 2);
+        assertTreeDistanceEquals("a(b,c)", "a(b,g)", 1);
 
         Random r = new Random();
         r.setSeed(RANDOM_SEED);

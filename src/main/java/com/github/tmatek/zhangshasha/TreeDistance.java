@@ -335,9 +335,16 @@ public final class TreeDistance {
             this.cost = first.getTransformationCost(operation, second);
         }
 
+        public ForestTrail(ForestTrail treeState, TreeNode first, TreeNode second) {
+            this.operation = TreeOperation.OP_RENAME_NODE;
+            this.first = first;
+            this.second = second;
+            this.cost = treeState.getTotalCost();
+            this.treeState = treeState;
+        }
+
         public int getTotalCost() {
-            return this.cost + (this.nextState == null ? 0 : this.nextState.getTotalCost()) + (this.treeState == null
-                    ? 0 : this.treeState.getTotalCost());
+            return this.cost + (this.nextState == null ? 0 : this.nextState.getTotalCost());
         }
     }
 
@@ -390,13 +397,14 @@ public final class TreeDistance {
                 if (first.getParent() == null)
                     delete.cost = HIGH_COST;
 
-                // both keyroots present a tree
-                ForestTrail rename = new ForestTrail(TreeOperation.OP_RENAME_NODE, first, second);
+                // both key roots present a tree?
+                ForestTrail rename;
                 boolean trees = postorder1.get(lmld1[k]).equals(lm1) && postorder2.get(lmld2[l]).equals(lm2);
-                if (trees)
+                if (trees) {
+                    rename = new ForestTrail(TreeOperation.OP_RENAME_NODE, first, second);
                     rename.nextState = forestDistance[i - 1][j - 1];
-                else {
-                    rename.treeState = treeDist[l][k];
+                } else {
+                    rename = new ForestTrail(treeDist[l][k], first, second);
                     rename.nextState = forestDistance[postorder2.get(lmld2[l]) - lm2][postorder1.get(lmld1[k]) - lm1];
                 }
 
